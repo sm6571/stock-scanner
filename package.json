@@ -1,0 +1,23 @@
+{
+  "name": "stock-scanner",
+  "version": "1.0.0",
+  "description": "Daily stock scanner for scalping — finds high-volatility, high-volume stocks",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "express-session": "^1.19.0",
+    "node-cron": "^3.0.3",
+    "sql.js": "^1.14.1",
+    "yahoo-finance2": "^2.14.0"
+  }
+}

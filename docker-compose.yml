@@ -1,0 +1,16 @@
+services:
+  stock-scanner:
+    build: .
+    container_name: stock-scanner
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    volumes:
+      - scanner-data:/app/data
+    environment:
+      - NODE_ENV=local
+      - SESSION_SECRET=change-me-to-a-random-string
+      - DB_PATH=/app/data/stock_scanner.db
+
+volumes:
+  scanner-data:
