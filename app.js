@@ -196,6 +196,15 @@ initDatabase().then(() => {
     console.log(`\n  Stock Scanner running at http://localhost:${PORT}\n`);
     startScheduler();
     console.log('');
+
+    // Run initial scan if no recent scan exists
+    const db = getDb();
+    const lastScan = db.prepare('SELECT * FROM scans ORDER BY scanned_at DESC LIMIT 1').get();
+    const oneHourAgo = new Date(Date.now() - 3600000).toISOString();
+    if (!lastScan || lastScan.scanned_at < oneHourAgo || lastScan.result_count === 0) {
+      console.log('  Running initial scan...\n');
+      runScan('startup').catch(err => console.error('  Initial scan failed:', err.message));
+    }
   });
 }).catch(err => {
   console.error('Failed to init:', err);

@@ -17,7 +17,6 @@
     "express-rate-limit": "^8.5.2",
     "express-session": "^1.19.0",
     "node-cron": "^3.0.3",
-    "sql.js": "^1.14.1",
-    "yahoo-finance2": "^2.14.0"
+    "sql.js": "^1.14.1"
   }
 }

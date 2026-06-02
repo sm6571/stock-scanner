@@ -60,6 +60,7 @@ async function loadLatestScan() {
     document.getElementById('scanInfo').textContent = `Last scan: ${timeAgo(data.scan.scanned_at)} (${data.scan.scan_type})`;
     buildSectorFilter();
     applyFilters();
+    renderQuickPicks();
   } catch { }
 }
 
@@ -142,6 +143,58 @@ function renderResults() {
     </tr>`;
   }
   tbody.innerHTML = html;
+}
+
+/* ── Quick Picks ── */
+function renderQuickPicks() {
+  const container = document.getElementById('quickPicksBody');
+  if (scanResults.length === 0) {
+    container.innerHTML = '<div class="text-muted small text-center py-2">Run a scan to see quick picks</div>';
+    return;
+  }
+
+  // Pick top 5 by score, min score 30
+  const picks = [...scanResults]
+    .filter(r => r.score >= 30 && r.price >= 5)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+
+  if (picks.length === 0) {
+    container.innerHTML = '<div class="text-muted small text-center py-2">No strong picks in latest scan</div>';
+    return;
+  }
+
+  let html = '';
+  for (const p of picks) {
+    const chgCls = p.change_pct >= 0 ? 'text-profit' : 'text-loss';
+    const gapCls = p.gap_pct >= 0 ? 'text-profit' : 'text-loss';
+    const scoreCls = p.score >= 60 ? 'score-high' : p.score >= 35 ? 'score-mid' : 'score-low';
+
+    // Generate reason
+    const reasons = [];
+    if (p.volume_ratio >= 3) reasons.push(`${p.volume_ratio}x vol`);
+    else if (p.volume_ratio >= 1.5) reasons.push(`${p.volume_ratio}x vol`);
+    if (Math.abs(p.gap_pct) >= 2) reasons.push(`${p.gap_pct > 0 ? '+' : ''}${p.gap_pct}% gap`);
+    if (p.atr_pct >= 3) reasons.push(`${p.atr_pct}% ATR`);
+    if (p.day_range_pct >= 3) reasons.push(`${p.day_range_pct}% range`);
+
+    html += `<div class="col">
+      <div class="qp-card">
+        <span class="qp-score ${scoreCls}">${p.score}</span>
+        <div class="qp-symbol">${p.symbol}</div>
+        <div class="qp-price">$${p.price.toFixed(2)} <span class="${chgCls}">${p.change_pct >= 0 ? '+' : ''}${p.change_pct}%</span></div>
+        <div class="qp-meta">
+          <span>${p.volume_ratio}x vol</span>
+          <span>·</span>
+          <span>ATR ${p.atr_pct}%</span>
+          <span>·</span>
+          <span class="${gapCls}">Gap ${p.gap_pct >= 0 ? '+' : ''}${p.gap_pct}%</span>
+        </div>
+        ${reasons.length > 0 ? `<div class="qp-reason">${reasons.join(' · ')}</div>` : ''}
+      </div>
+    </div>`;
+  }
+  container.innerHTML = html;
 }
 
 /* ── Run Scan ── */

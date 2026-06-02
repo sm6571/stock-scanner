@@ -16,6 +16,7 @@
       <div class="d-flex gap-2 align-items-center">
         <span class="scan-info" id="scanInfo">No scans yet</span>
         <button class="btn-icon" onclick="runScan()" id="scanBtn" title="Run Scan Now">🔍 Scan</button>
+        <button class="btn-icon" data-bs-toggle="modal" data-bs-target="#helpModal" title="Help / Wiki">❓</button>
         <button class="btn-icon" onclick="toggleTheme()" title="Toggle theme">🌓</button>
         <span class="text-muted small" id="navUser"></span>
         <button class="btn-icon" onclick="logout()" title="Logout">🚪</button>
@@ -53,6 +54,19 @@
 
   <!-- Main Content -->
   <div class="container-fluid mt-3">
+    <!-- Quick Picks -->
+    <div class="card mb-3" id="quickPicksCard">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0" style="font-weight:700;">🔥 Quick Picks <span class="text-muted" style="font-size:.75rem;font-weight:400;" id="qpTime">— pre-market top 5</span></h6>
+          <span class="scan-info" id="qpScanInfo"></span>
+        </div>
+        <div class="row g-2" id="quickPicksBody">
+          <div class="text-muted small text-center py-2">Run a scan to see quick picks</div>
+        </div>
+      </div>
+    </div>
+
     <div class="row g-3">
       <!-- Results Table -->
       <div class="col-lg-9">
@@ -122,6 +136,74 @@
           <div class="mb-3"><label class="form-label">Notes</label><input type="text" class="form-control" id="wlNotes" placeholder="Optional notes"></div>
         </div>
         <div class="modal-footer border-0"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-accent" onclick="addToWatchlist()">Add</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help / Wiki Modal -->
+  <div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">📖 Reading the Scanner</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" style="font-size:.88rem;line-height:1.7;">
+
+          <h6 style="color:var(--accent);font-weight:700;">Score</h6>
+          <p>A composite <strong>0-100</strong> number combining all the columns below. Higher = more scalp-worthy. The formula weights <strong>Volume Ratio (30%)</strong>, <strong>ATR% (30%)</strong>, <strong>|Gap%| (20%)</strong>, and <strong>Range% (20%)</strong>.</p>
+          <div style="display:flex;gap:.8rem;margin-bottom:1rem;">
+            <span><span class="score-badge score-high">60+</span> Hot — high activity</span>
+            <span><span class="score-badge score-mid">35-59</span> Moderate</span>
+            <span><span class="score-badge score-low">&lt;35</span> Low activity</span>
+          </div>
+
+          <h6 style="color:var(--accent);font-weight:700;" class="mt-3">Chg% <span class="text-muted" style="font-weight:400;font-size:.78rem;">— Change Percent</span></h6>
+          <p>How much the price moved from <strong>yesterday's close</strong> to <strong>right now</strong>. Shows current momentum direction. <span class="text-profit">Green = up</span>, <span class="text-loss">Red = down</span>. Large Chg% means the stock is moving today.</p>
+
+          <h6 style="color:var(--accent);font-weight:700;" class="mt-3">Gap% <span class="text-muted" style="font-weight:400;font-size:.78rem;">— Overnight Gap</span></h6>
+          <p>The difference between <strong>today's open</strong> and <strong>yesterday's close</strong>. A stock that closed at $100 and opened at $103 has a <strong>+3% gap</strong>. Big gaps usually mean <strong>news, earnings, or a catalyst</strong> happened overnight. Scalpers love gap stocks because they trend and have high volume at open.</p>
+          <ul style="font-size:.82rem;">
+            <li><strong>±1-2%</strong> — Normal, mild interest</li>
+            <li><strong>±2-5%</strong> — Notable catalyst, expect strong volume</li>
+            <li><strong>±5%+</strong> — Major event (earnings, FDA, etc.)</li>
+          </ul>
+
+          <h6 style="color:var(--accent);font-weight:700;" class="mt-3">Vol Ratio <span class="text-muted" style="font-weight:400;font-size:.78rem;">— Volume Ratio</span></h6>
+          <p>Today's volume <strong>divided by</strong> the 20-day average volume. This is arguably the <strong>most important column</strong> for scalping. It tells you if more people than usual are trading this stock right now.</p>
+          <ul style="font-size:.82rem;">
+            <li><strong>1-1.5x</strong> — Normal day</li>
+            <li><strong>1.5-3x</strong> — Above average interest</li>
+            <li><strong>3-5x</strong> — Unusual volume, something is happening</li>
+            <li><strong>5x+</strong> — Massive volume spike — news, earnings, or short squeeze</li>
+          </ul>
+          <p>The <strong>bar</strong> next to the number is a visual indicator (fills up to 5x).</p>
+
+          <h6 style="color:var(--accent);font-weight:700;" class="mt-3">ATR% <span class="text-muted" style="font-weight:400;font-size:.78rem;">— Average True Range</span></h6>
+          <p>The stock's <strong>average daily price swing</strong> over the past 14 days, expressed as a percentage of the price. This tells you how much a stock <em>typically</em> moves in a single day.</p>
+          <p>Example: A $50 stock with <strong>ATR% = 4%</strong> typically swings <strong>$2/day</strong>. That's your profit potential per trade.</p>
+          <ul style="font-size:.82rem;">
+            <li><strong>&lt;1%</strong> — Barely moves. Skip for scalping.</li>
+            <li><strong>1-2%</strong> — Moderate, fine for large positions</li>
+            <li><strong>2-4%</strong> — Good scalp range</li>
+            <li><strong>4%+</strong> — Very volatile, bigger moves but riskier</li>
+          </ul>
+
+          <h6 style="color:var(--accent);font-weight:700;" class="mt-3">Range% <span class="text-muted" style="font-weight:400;font-size:.78rem;">— Intraday Range</span></h6>
+          <p>How much the stock has moved <strong>today specifically</strong>: <code>(Day High - Day Low) / Open × 100</code>. Compare this to ATR% — if Range% is <em>already near ATR%</em>, the stock may have used up most of its daily move. If Range% is low but ATR% is high, there may still be a move coming.</p>
+
+          <h6 style="color:var(--accent);font-weight:700;" class="mt-3">🔥 Quick Picks</h6>
+          <p>The 5 cards at the top are simply the <strong>highest-scored stocks</strong> from the latest scan (minimum score 30). They summarize the key reasons each stock is active. Use them as your morning starting point — then look at the full table for more options.</p>
+
+          <h6 style="color:var(--accent);font-weight:700;" class="mt-3">⚠️ Important Notes</h6>
+          <ul style="font-size:.82rem;">
+            <li>Data may be <strong>delayed up to 15 minutes</strong> (Yahoo Finance).</li>
+            <li>This is a <strong>watchlist generator</strong>, not real-time trading software.</li>
+            <li>Weekend/after-hours scans show the <strong>last trading day's</strong> data.</li>
+            <li>Always confirm with your broker before entering trades.</li>
+          </ul>
+
+        </div>
       </div>
     </div>
   </div>
